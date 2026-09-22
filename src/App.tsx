@@ -22,6 +22,7 @@ interface Pathway {
 }
 
 const STRIPE_LINK = "https://buy.stripe.com/test_28EdR25B85H2co188qgQE00";
+const INTEREST_LINK = "https://forms.gle/PEGA_AQUI_TU_GOOGLE_FORM";
 
 const PATHWAYS: Pathway[] = [
   // ===== NEW ZEALAND =====
@@ -148,8 +149,11 @@ function PathwayDetail({ p, onBack }: { p: Pathway; onBack: () => void }) {
           </div>
         </div>
         <div className="cta">
-          <p>Full database (all NZ, AU &amp; CO pathways) — get early access.</p>
-          <a className="btn" href={STRIPE_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none", display: "inline-block" }}>Get early access — $19</a>
+          <p>Want the full database (all NZ, AU &amp; CO pathways)?</p>
+          <div className="cta-btns">
+            <a className="btn" href={INTEREST_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>I'm interested</a>
+            <a className="btn-ghost" href={STRIPE_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>Pre-order · $19</a>
+          </div>
         </div>
       </div>
     </div>
@@ -159,7 +163,7 @@ function PathwayDetail({ p, onBack }: { p: Pathway; onBack: () => void }) {
 export default function App() {
   const [country, setCountry] = useState<"All" | Country>("All");
   const [query, setQuery] = useState("");
-  const [openId, setOpenId] = useState<string | null>(null); // null = list view; id = detail page
+  const [openId, setOpenId] = useState<string | null>(null);
 
   const inCountry = useMemo(
     () => PATHWAYS.filter((p) => country === "All" || p.country === country),
@@ -176,7 +180,6 @@ export default function App() {
 
   const openPathway = openId ? PATHWAYS.find((p) => p.id === openId)! : null;
 
-  // ===== DETAIL PAGE (feels like another page) =====
   if (openPathway) {
     return (
       <>
@@ -198,7 +201,6 @@ export default function App() {
     );
   }
 
-  // ===== LIST / HOME PAGE =====
   return (
     <>
       <nav>
@@ -213,6 +215,11 @@ export default function App() {
           <div className="eyebrow">The Education Data Library</div>
           <h1>See any career or qualification by its <span className="g">real data</span>.</h1>
           <p>Search a pathway. See what it pays, whether it hires, and what it truly costs — coded to ANZSCO &amp; ISCO across New Zealand, Australia and Colombia.</p>
+
+          <div className="hero-cta">
+            <a className="btn" href={INTEREST_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>I'm interested — get early access</a>
+            <a className="btn-ghost" href={STRIPE_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>Pre-order for $19</a>
+          </div>
 
           <div className="controls">
             <select className="dropdown" value={country} onChange={(e) => setCountry(e.target.value as "All" | Country)}>
