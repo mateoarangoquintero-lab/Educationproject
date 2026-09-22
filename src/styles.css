@@ -100,4 +100,10 @@ footer { border-top: 1px solid #23262E; margin-top: 20px; padding: 22px 0 40px; 
   .layout { grid-template-columns: 1fr; }
   .stats, .lower { grid-template-columns: 1fr; }
   .stat, .section:first-child { border-right: 0; }
+.hero-cta { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 20px; }
+.cta-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+.btn-ghost { display: inline-block; background: transparent; color: #F5F5F7; font-weight: 600; font-size: 14px; padding: 11px 20px; border-radius: 9px; border: 1px solid #23262E; cursor: pointer; font-family: inherit; }
+.btn-ghost:hover { border-color: #22D3A0; }
+
+  
 }
