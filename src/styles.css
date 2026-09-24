@@ -105,5 +105,37 @@ footer { border-top: 1px solid #23262E; margin-top: 20px; padding: 22px 0 40px; 
 .btn-ghost { display: inline-block; background: transparent; color: #F5F5F7; font-weight: 600; font-size: 14px; padding: 11px 20px; border-radius: 9px; border: 1px solid #23262E; cursor: pointer; font-family: inherit; }
 .btn-ghost:hover { border-color: #22D3A0; }
 
+/* --- HERO layout mejorado --- */
+header { padding: 60px 0 30px; text-align: center; }
+header p { color: #8A8F98; font-size: 16px; max-width: 52ch; margin: 16px auto 0; line-height: 1.6; }
+
+/* botones del hero: más separados y centrados */
+.hero-cta { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 28px; }
+
+.btn {
+  display: inline-block;
+  background: #F5F547; color: #1A1A08; font-weight: 700; font-size: 15px;
+  padding: 14px 26px; border-radius: 10px; border: 0; cursor: pointer;
+  font-family: inherit; transition: filter .15s, transform .1s;
+}
+.btn:hover { filter: brightness(1.05); transform: translateY(-1px); }
+
+/* Pre-order: ahora sí con borde visible y buen contraste */
+.btn-ghost {
+  display: inline-block;
+  background: transparent; color: #F5F5F7; font-weight: 600; font-size: 15px;
+  padding: 14px 26px; border-radius: 10px; border: 1px solid #3A3F4A;
+  cursor: pointer; font-family: inherit; transition: border-color .15s, transform .1s;
+}
+.btn-ghost:hover { border-color: #22D3A0; color: #22D3A0; transform: translateY(-1px); }
+
+/* controles (país + buscador): más aire arriba */
+.controls { display: flex; gap: 12px; justify-content: center; align-items: center; margin: 34px auto 0; flex-wrap: wrap; }
+.dropdown { padding: 14px 18px; }
+.searchbar input { padding: 14px 12px; }
+
+/* separación de la cuadrícula */
+.grid-head { margin: 40px 0 16px; }
+ 
   
 }
