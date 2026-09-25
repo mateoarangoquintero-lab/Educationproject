@@ -13,6 +13,8 @@ interface Pathway {
   country: Country;
   skillLevel: string;
   medianSalary: number;
+  studyCost: number;   // costo aproximado en la moneda local (para el ROI)
+  studyYears: number;  // años de estudio/formación (para el payback)
   trueCost: string;
   demandTrend: number[];
   demandLabel: Trend;
@@ -26,52 +28,72 @@ const INTEREST_LINK = "https://forms.gle/PEGA_AQUI_TU_GOOGLE_FORM";
 
 const PATHWAYS: Pathway[] = [
   // ===== NEW ZEALAND =====
-  { id: "elec-nz", name: "Electrician", anzsco: "341111", isco: "7411", nzsced: "031505", country: "NZ", skillLevel: "Skill level 3", medianSalary: 84000, trueCost: "~$8k (earn while training)", demandTrend: [70,74,78,82,86,90], demandLabel: "Rising", economic: 82, hireability: 90, network: 70 },
-  { id: "plum-nz", name: "Plumber", anzsco: "334111", isco: "7126", nzsced: "040311", country: "NZ", skillLevel: "Skill level 3", medianSalary: 90000, trueCost: "~$6k (earn while training)", demandTrend: [72,76,80,84,88,92], demandLabel: "Rising", economic: 85, hireability: 88, network: 68 },
-  { id: "carp-nz", name: "Carpenter", anzsco: "331212", isco: "7115", nzsced: "040321", country: "NZ", skillLevel: "Skill level 3", medianSalary: 75000, trueCost: "~$5k (earn while training)", demandTrend: [64,68,71,73,74,76], demandLabel: "Rising", economic: 76, hireability: 84, network: 64 },
-  { id: "nurse-nz", name: "Registered Nurse", anzsco: "254411", isco: "2221", nzsced: "060301", country: "NZ", skillLevel: "Skill level 1", medianSalary: 83000, trueCost: "$32k + 3 yrs study", demandTrend: [74,78,82,86,90,94], demandLabel: "Rising", economic: 72, hireability: 95, network: 75 },
-  { id: "swe-nz", name: "Software Engineer", anzsco: "261313", isco: "2512", nzsced: "020113", country: "NZ", skillLevel: "Skill level 1", medianSalary: 110000, trueCost: "$30k + 3 yrs study", demandTrend: [98,102,104,102,100,101], demandLabel: "Stable", economic: 92, hireability: 68, network: 82 },
-  { id: "data-nz", name: "Data Analyst", anzsco: "224999", isco: "2529", nzsced: "020305", country: "NZ", skillLevel: "Skill level 1", medianSalary: 95000, trueCost: "$30k + 3 yrs study", demandTrend: [72,80,86,92,98,104], demandLabel: "Rising", economic: 88, hireability: 82, network: 74 },
-  { id: "teach-nz", name: "Secondary Teacher", anzsco: "241411", isco: "2330", nzsced: "070101", country: "NZ", skillLevel: "Skill level 1", medianSalary: 75000, trueCost: "$34k + 4 yrs study", demandTrend: [66,70,74,78,82,85], demandLabel: "Rising", economic: 60, hireability: 82, network: 65 },
-  { id: "acc-nz", name: "Accountant", anzsco: "221111", isco: "2411", nzsced: "080101", country: "NZ", skillLevel: "Skill level 1", medianSalary: 85000, trueCost: "$28k + 3 yrs study", demandTrend: [74,76,78,79,80,81], demandLabel: "Stable", economic: 76, hireability: 72, network: 78 },
-  { id: "civil-nz", name: "Civil Engineer", anzsco: "233211", isco: "2142", nzsced: "031303", country: "NZ", skillLevel: "Skill level 1", medianSalary: 100000, trueCost: "$40k + 4 yrs study", demandTrend: [78,82,85,88,91,94], demandLabel: "Rising", economic: 86, hireability: 86, network: 78 },
-  { id: "chef-nz", name: "Chef", anzsco: "351311", isco: "3434", nzsced: "110101", country: "NZ", skillLevel: "Skill level 3", medianSalary: 62000, trueCost: "~$10k + apprenticeship", demandTrend: [58,60,62,63,64,66], demandLabel: "Stable", economic: 55, hireability: 78, network: 60 },
-  { id: "pharm-nz", name: "Pharmacist", anzsco: "251513", isco: "2262", nzsced: "060501", country: "NZ", skillLevel: "Skill level 1", medianSalary: 85000, trueCost: "$45k + 4 yrs study", demandTrend: [70,71,71,70,70,69], demandLabel: "Stable", economic: 68, hireability: 74, network: 70 },
-  { id: "mech-nz", name: "Motor Mechanic", anzsco: "321211", isco: "7231", nzsced: "030701", country: "NZ", skillLevel: "Skill level 3", medianSalary: 68000, trueCost: "~$5k (earn while training)", demandTrend: [60,62,64,65,66,68], demandLabel: "Rising", economic: 62, hireability: 80, network: 58 },
+  { id: "elec-nz", name: "Electrician", anzsco: "341111", isco: "7411", nzsced: "031505", country: "NZ", skillLevel: "Skill level 3", medianSalary: 84000, studyCost: 8000, studyYears: 4, trueCost: "~$8k (earn while training)", demandTrend: [70,74,78,82,86,90], demandLabel: "Rising", economic: 82, hireability: 90, network: 70 },
+  { id: "plum-nz", name: "Plumber", anzsco: "334111", isco: "7126", nzsced: "040311", country: "NZ", skillLevel: "Skill level 3", medianSalary: 90000, studyCost: 6000, studyYears: 4, trueCost: "~$6k (earn while training)", demandTrend: [72,76,80,84,88,92], demandLabel: "Rising", economic: 85, hireability: 88, network: 68 },
+  { id: "carp-nz", name: "Carpenter", anzsco: "331212", isco: "7115", nzsced: "040321", country: "NZ", skillLevel: "Skill level 3", medianSalary: 75000, studyCost: 5000, studyYears: 4, trueCost: "~$5k (earn while training)", demandTrend: [64,68,71,73,74,76], demandLabel: "Rising", economic: 76, hireability: 84, network: 64 },
+  { id: "nurse-nz", name: "Registered Nurse", anzsco: "254411", isco: "2221", nzsced: "060301", country: "NZ", skillLevel: "Skill level 1", medianSalary: 83000, studyCost: 32000, studyYears: 3, trueCost: "$32k + 3 yrs study", demandTrend: [74,78,82,86,90,94], demandLabel: "Rising", economic: 72, hireability: 95, network: 75 },
+  { id: "swe-nz", name: "Software Engineer", anzsco: "261313", isco: "2512", nzsced: "020113", country: "NZ", skillLevel: "Skill level 1", medianSalary: 110000, studyCost: 30000, studyYears: 3, trueCost: "$30k + 3 yrs study", demandTrend: [98,102,104,102,100,101], demandLabel: "Stable", economic: 92, hireability: 68, network: 82 },
+  { id: "data-nz", name: "Data Analyst", anzsco: "224999", isco: "2529", nzsced: "020305", country: "NZ", skillLevel: "Skill level 1", medianSalary: 95000, studyCost: 30000, studyYears: 3, trueCost: "$30k + 3 yrs study", demandTrend: [72,80,86,92,98,104], demandLabel: "Rising", economic: 88, hireability: 82, network: 74 },
+  { id: "teach-nz", name: "Secondary Teacher", anzsco: "241411", isco: "2330", nzsced: "070101", country: "NZ", skillLevel: "Skill level 1", medianSalary: 75000, studyCost: 34000, studyYears: 4, trueCost: "$34k + 4 yrs study", demandTrend: [66,70,74,78,82,85], demandLabel: "Rising", economic: 60, hireability: 82, network: 65 },
+  { id: "acc-nz", name: "Accountant", anzsco: "221111", isco: "2411", nzsced: "080101", country: "NZ", skillLevel: "Skill level 1", medianSalary: 85000, studyCost: 28000, studyYears: 3, trueCost: "$28k + 3 yrs study", demandTrend: [74,76,78,79,80,81], demandLabel: "Stable", economic: 76, hireability: 72, network: 78 },
+  { id: "civil-nz", name: "Civil Engineer", anzsco: "233211", isco: "2142", nzsced: "031303", country: "NZ", skillLevel: "Skill level 1", medianSalary: 100000, studyCost: 40000, studyYears: 4, trueCost: "$40k + 4 yrs study", demandTrend: [78,82,85,88,91,94], demandLabel: "Rising", economic: 86, hireability: 86, network: 78 },
+  { id: "chef-nz", name: "Chef", anzsco: "351311", isco: "3434", nzsced: "110101", country: "NZ", skillLevel: "Skill level 3", medianSalary: 62000, studyCost: 10000, studyYears: 3, trueCost: "~$10k + apprenticeship", demandTrend: [58,60,62,63,64,66], demandLabel: "Stable", economic: 55, hireability: 78, network: 60 },
+  { id: "pharm-nz", name: "Pharmacist", anzsco: "251513", isco: "2262", nzsced: "060501", country: "NZ", skillLevel: "Skill level 1", medianSalary: 85000, studyCost: 45000, studyYears: 4, trueCost: "$45k + 4 yrs study", demandTrend: [70,71,71,70,70,69], demandLabel: "Stable", economic: 68, hireability: 74, network: 70 },
+  { id: "mech-nz", name: "Motor Mechanic", anzsco: "321211", isco: "7231", nzsced: "030701", country: "NZ", skillLevel: "Skill level 3", medianSalary: 68000, studyCost: 5000, studyYears: 4, trueCost: "~$5k (earn while training)", demandTrend: [60,62,64,65,66,68], demandLabel: "Rising", economic: 62, hireability: 80, network: 58 },
 
   // ===== AUSTRALIA =====
-  { id: "elec-au", name: "Electrician", anzsco: "341111", isco: "7411", nzsced: "031505", country: "AU", skillLevel: "Skill level 3", medianSalary: 100000, trueCost: "AU$8k (earn while training)", demandTrend: [76,80,84,88,92,96], demandLabel: "Rising", economic: 86, hireability: 90, network: 70 },
-  { id: "plum-au", name: "Plumber", anzsco: "334111", isco: "7126", nzsced: "040311", country: "AU", skillLevel: "Skill level 3", medianSalary: 95000, trueCost: "AU$6k (earn while training)", demandTrend: [74,78,82,86,90,94], demandLabel: "Rising", economic: 84, hireability: 88, network: 68 },
-  { id: "carp-au", name: "Carpenter", anzsco: "331212", isco: "7115", nzsced: "040321", country: "AU", skillLevel: "Skill level 3", medianSalary: 80000, trueCost: "AU$5k (earn while training)", demandTrend: [66,69,72,74,76,78], demandLabel: "Rising", economic: 76, hireability: 84, network: 64 },
-  { id: "nurse-au", name: "Registered Nurse", anzsco: "254418", isco: "2221", nzsced: "060301", country: "AU", skillLevel: "Skill level 1", medianSalary: 85000, trueCost: "AU$34k + 3 yrs study", demandTrend: [76,80,84,88,92,96], demandLabel: "Rising", economic: 74, hireability: 95, network: 76 },
-  { id: "swe-au", name: "Software Engineer", anzsco: "261313", isco: "2512", nzsced: "020113", country: "AU", skillLevel: "Skill level 1", medianSalary: 120000, trueCost: "AU$35k + 3 yrs study", demandTrend: [100,104,106,104,103,104], demandLabel: "Stable", economic: 94, hireability: 72, network: 84 },
-  { id: "data-au", name: "Data Scientist", anzsco: "224999", isco: "2529", nzsced: "020305", country: "AU", skillLevel: "Skill level 1", medianSalary: 122000, trueCost: "AU$35k + 3 yrs study", demandTrend: [78,86,94,100,106,112], demandLabel: "Rising", economic: 92, hireability: 84, network: 76 },
-  { id: "civil-au", name: "Civil Engineer", anzsco: "233211", isco: "2142", nzsced: "031303", country: "AU", skillLevel: "Skill level 1", medianSalary: 115000, trueCost: "AU$40k + 4 yrs study", demandTrend: [80,84,87,90,93,96], demandLabel: "Rising", economic: 88, hireability: 86, network: 80 },
-  { id: "eleceng-au", name: "Electrical Engineer", anzsco: "233311", isco: "2151", nzsced: "031303", country: "AU", skillLevel: "Skill level 1", medianSalary: 133000, trueCost: "AU$40k + 4 yrs study", demandTrend: [82,86,89,92,95,98], demandLabel: "Rising", economic: 90, hireability: 84, network: 80 },
-  { id: "acc-au", name: "Accountant", anzsco: "221111", isco: "2411", nzsced: "080101", country: "AU", skillLevel: "Skill level 1", medianSalary: 95000, trueCost: "AU$30k + 3 yrs study", demandTrend: [74,76,78,79,80,81], demandLabel: "Stable", economic: 78, hireability: 74, network: 80 },
-  { id: "teach-au", name: "Primary School Teacher", anzsco: "241213", isco: "2341", nzsced: "070101", country: "AU", skillLevel: "Skill level 1", medianSalary: 82000, trueCost: "AU$34k + 4 yrs study", demandTrend: [68,72,75,78,80,82], demandLabel: "Rising", economic: 64, hireability: 84, network: 66 },
-  { id: "chef-au", name: "Chef", anzsco: "351311", isco: "3434", nzsced: "110101", country: "AU", skillLevel: "Skill level 3", medianSalary: 68000, trueCost: "AU$10k + apprenticeship", demandTrend: [58,60,62,63,64,66], demandLabel: "Stable", economic: 55, hireability: 78, network: 60 },
-  { id: "mining-au", name: "Mining Engineer", anzsco: "233611", isco: "2146", nzsced: "031303", country: "AU", skillLevel: "Skill level 1", medianSalary: 150000, trueCost: "AU$40k + 4 yrs study", demandTrend: [88,92,96,100,104,108], demandLabel: "Rising", economic: 96, hireability: 82, network: 78 },
+  { id: "elec-au", name: "Electrician", anzsco: "341111", isco: "7411", nzsced: "031505", country: "AU", skillLevel: "Skill level 3", medianSalary: 100000, studyCost: 8000, studyYears: 4, trueCost: "AU$8k (earn while training)", demandTrend: [76,80,84,88,92,96], demandLabel: "Rising", economic: 86, hireability: 90, network: 70 },
+  { id: "plum-au", name: "Plumber", anzsco: "334111", isco: "7126", nzsced: "040311", country: "AU", skillLevel: "Skill level 3", medianSalary: 95000, studyCost: 6000, studyYears: 4, trueCost: "AU$6k (earn while training)", demandTrend: [74,78,82,86,90,94], demandLabel: "Rising", economic: 84, hireability: 88, network: 68 },
+  { id: "carp-au", name: "Carpenter", anzsco: "331212", isco: "7115", nzsced: "040321", country: "AU", skillLevel: "Skill level 3", medianSalary: 80000, studyCost: 5000, studyYears: 4, trueCost: "AU$5k (earn while training)", demandTrend: [66,69,72,74,76,78], demandLabel: "Rising", economic: 76, hireability: 84, network: 64 },
+  { id: "nurse-au", name: "Registered Nurse", anzsco: "254418", isco: "2221", nzsced: "060301", country: "AU", skillLevel: "Skill level 1", medianSalary: 85000, studyCost: 34000, studyYears: 3, trueCost: "AU$34k + 3 yrs study", demandTrend: [76,80,84,88,92,96], demandLabel: "Rising", economic: 74, hireability: 95, network: 76 },
+  { id: "swe-au", name: "Software Engineer", anzsco: "261313", isco: "2512", nzsced: "020113", country: "AU", skillLevel: "Skill level 1", medianSalary: 120000, studyCost: 35000, studyYears: 3, trueCost: "AU$35k + 3 yrs study", demandTrend: [100,104,106,104,103,104], demandLabel: "Stable", economic: 94, hireability: 72, network: 84 },
+  { id: "data-au", name: "Data Scientist", anzsco: "224999", isco: "2529", nzsced: "020305", country: "AU", skillLevel: "Skill level 1", medianSalary: 122000, studyCost: 35000, studyYears: 3, trueCost: "AU$35k + 3 yrs study", demandTrend: [78,86,94,100,106,112], demandLabel: "Rising", economic: 92, hireability: 84, network: 76 },
+  { id: "civil-au", name: "Civil Engineer", anzsco: "233211", isco: "2142", nzsced: "031303", country: "AU", skillLevel: "Skill level 1", medianSalary: 115000, studyCost: 40000, studyYears: 4, trueCost: "AU$40k + 4 yrs study", demandTrend: [80,84,87,90,93,96], demandLabel: "Rising", economic: 88, hireability: 86, network: 80 },
+  { id: "eleceng-au", name: "Electrical Engineer", anzsco: "233311", isco: "2151", nzsced: "031303", country: "AU", skillLevel: "Skill level 1", medianSalary: 133000, studyCost: 40000, studyYears: 4, trueCost: "AU$40k + 4 yrs study", demandTrend: [82,86,89,92,95,98], demandLabel: "Rising", economic: 90, hireability: 84, network: 80 },
+  { id: "acc-au", name: "Accountant", anzsco: "221111", isco: "2411", nzsced: "080101", country: "AU", skillLevel: "Skill level 1", medianSalary: 95000, studyCost: 30000, studyYears: 3, trueCost: "AU$30k + 3 yrs study", demandTrend: [74,76,78,79,80,81], demandLabel: "Stable", economic: 78, hireability: 74, network: 80 },
+  { id: "teach-au", name: "Primary School Teacher", anzsco: "241213", isco: "2341", nzsced: "070101", country: "AU", skillLevel: "Skill level 1", medianSalary: 82000, studyCost: 34000, studyYears: 4, trueCost: "AU$34k + 4 yrs study", demandTrend: [68,72,75,78,80,82], demandLabel: "Rising", economic: 64, hireability: 84, network: 66 },
+  { id: "chef-au", name: "Chef", anzsco: "351311", isco: "3434", nzsced: "110101", country: "AU", skillLevel: "Skill level 3", medianSalary: 68000, studyCost: 10000, studyYears: 3, trueCost: "AU$10k + apprenticeship", demandTrend: [58,60,62,63,64,66], demandLabel: "Stable", economic: 55, hireability: 78, network: 60 },
+  { id: "mining-au", name: "Mining Engineer", anzsco: "233611", isco: "2146", nzsced: "031303", country: "AU", skillLevel: "Skill level 1", medianSalary: 150000, studyCost: 40000, studyYears: 4, trueCost: "AU$40k + 4 yrs study", demandTrend: [88,92,96,100,104,108], demandLabel: "Rising", economic: 96, hireability: 82, network: 78 },
 
-  // ===== COLOMBIA =====
-  { id: "elec-co", name: "Electrician", anzsco: "—", isco: "7411", nzsced: "031505", country: "CO", skillLevel: "ISCO skill level 2", medianSalary: 30000000, trueCost: "COP ~4M + técnico (SENA)", demandTrend: [60,63,66,68,70,72], demandLabel: "Rising", economic: 55, hireability: 82, network: 58 },
-  { id: "plum-co", name: "Plumber", anzsco: "—", isco: "7126", nzsced: "040311", country: "CO", skillLevel: "ISCO skill level 2", medianSalary: 28000000, trueCost: "COP ~3M + técnico", demandTrend: [58,60,62,63,64,66], demandLabel: "Stable", economic: 52, hireability: 78, network: 55 },
-  { id: "carp-co", name: "Carpenter", anzsco: "—", isco: "7115", nzsced: "040321", country: "CO", skillLevel: "ISCO skill level 2", medianSalary: 26000000, trueCost: "COP ~3M + técnico", demandTrend: [56,57,58,59,60,61], demandLabel: "Stable", economic: 48, hireability: 74, network: 52 },
-  { id: "nurse-co", name: "Registered Nurse", anzsco: "—", isco: "2221", nzsced: "060301", country: "CO", skillLevel: "ISCO skill level 3", medianSalary: 36000000, trueCost: "COP ~40M + 4–5 yrs", demandTrend: [64,67,70,73,76,79], demandLabel: "Rising", economic: 58, hireability: 88, network: 66 },
-  { id: "swe-co", name: "Software Engineer", anzsco: "—", isco: "2512", nzsced: "020113", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 60000000, trueCost: "COP ~50M + 5 yrs", demandTrend: [80,90,100,110,120,130], demandLabel: "Rising", economic: 82, hireability: 80, network: 78 },
-  { id: "data-co", name: "Data Analyst", anzsco: "—", isco: "2529", nzsced: "020305", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 54000000, trueCost: "COP ~50M + 5 yrs", demandTrend: [72,82,92,102,112,122], demandLabel: "Rising", economic: 78, hireability: 80, network: 72 },
-  { id: "teach-co", name: "Secondary Teacher", anzsco: "—", isco: "2330", nzsced: "070101", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 30000000, trueCost: "COP ~40M + licenciatura", demandTrend: [58,60,62,63,64,65], demandLabel: "Stable", economic: 48, hireability: 78, network: 60 },
-  { id: "acc-co", name: "Accountant", anzsco: "—", isco: "2411", nzsced: "080101", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 36000000, trueCost: "COP ~40M + 5 yrs", demandTrend: [66,68,70,71,72,73], demandLabel: "Stable", economic: 62, hireability: 76, network: 74 },
-  { id: "civil-co", name: "Civil Engineer", anzsco: "—", isco: "2142", nzsced: "031303", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 36000000, trueCost: "COP ~50M + 5 yrs", demandTrend: [68,70,72,74,76,78], demandLabel: "Rising", economic: 66, hireability: 82, network: 72 },
-  { id: "eleceng-co", name: "Electrical Engineer", anzsco: "—", isco: "2151", nzsced: "031303", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 39000000, trueCost: "COP ~50M + 5 yrs", demandTrend: [70,72,74,76,78,80], demandLabel: "Rising", economic: 70, hireability: 82, network: 74 },
-  { id: "chef-co", name: "Chef", anzsco: "—", isco: "3434", nzsced: "110101", country: "CO", skillLevel: "ISCO skill level 3", medianSalary: 24000000, trueCost: "COP ~10M + técnico", demandTrend: [54,56,58,59,60,62], demandLabel: "Stable", economic: 44, hireability: 74, network: 56 },
-  { id: "pharm-co", name: "Pharmacist", anzsco: "—", isco: "2262", nzsced: "060501", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 42000000, trueCost: "COP ~50M + 5 yrs", demandTrend: [64,66,67,68,69,70], demandLabel: "Stable", economic: 66, hireability: 76, network: 68 },
+  // ===== COLOMBIA (salary & cost in COP) =====
+  { id: "elec-co", name: "Electrician", anzsco: "—", isco: "7411", nzsced: "031505", country: "CO", skillLevel: "ISCO skill level 2", medianSalary: 30000000, studyCost: 4000000, studyYears: 2, trueCost: "COP ~4M + técnico (SENA)", demandTrend: [60,63,66,68,70,72], demandLabel: "Rising", economic: 55, hireability: 82, network: 58 },
+  { id: "plum-co", name: "Plumber", anzsco: "—", isco: "7126", nzsced: "040311", country: "CO", skillLevel: "ISCO skill level 2", medianSalary: 28000000, studyCost: 3000000, studyYears: 2, trueCost: "COP ~3M + técnico", demandTrend: [58,60,62,63,64,66], demandLabel: "Stable", economic: 52, hireability: 78, network: 55 },
+  { id: "carp-co", name: "Carpenter", anzsco: "—", isco: "7115", nzsced: "040321", country: "CO", skillLevel: "ISCO skill level 2", medianSalary: 26000000, studyCost: 3000000, studyYears: 2, trueCost: "COP ~3M + técnico", demandTrend: [56,57,58,59,60,61], demandLabel: "Stable", economic: 48, hireability: 74, network: 52 },
+  { id: "nurse-co", name: "Registered Nurse", anzsco: "—", isco: "2221", nzsced: "060301", country: "CO", skillLevel: "ISCO skill level 3", medianSalary: 36000000, studyCost: 40000000, studyYears: 5, trueCost: "COP ~40M + 4–5 yrs", demandTrend: [64,67,70,73,76,79], demandLabel: "Rising", economic: 58, hireability: 88, network: 66 },
+  { id: "swe-co", name: "Software Engineer", anzsco: "—", isco: "2512", nzsced: "020113", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 60000000, studyCost: 50000000, studyYears: 5, trueCost: "COP ~50M + 5 yrs", demandTrend: [80,90,100,110,120,130], demandLabel: "Rising", economic: 82, hireability: 80, network: 78 },
+  { id: "data-co", name: "Data Analyst", anzsco: "—", isco: "2529", nzsced: "020305", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 54000000, studyCost: 50000000, studyYears: 5, trueCost: "COP ~50M + 5 yrs", demandTrend: [72,82,92,102,112,122], demandLabel: "Rising", economic: 78, hireability: 80, network: 72 },
+  { id: "teach-co", name: "Secondary Teacher", anzsco: "—", isco: "2330", nzsced: "070101", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 30000000, studyCost: 40000000, studyYears: 5, trueCost: "COP ~40M + licenciatura", demandTrend: [58,60,62,63,64,65], demandLabel: "Stable", economic: 48, hireability: 78, network: 60 },
+  { id: "acc-co", name: "Accountant", anzsco: "—", isco: "2411", nzsced: "080101", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 36000000, studyCost: 40000000, studyYears: 5, trueCost: "COP ~40M + 5 yrs", demandTrend: [66,68,70,71,72,73], demandLabel: "Stable", economic: 62, hireability: 76, network: 74 },
+  { id: "civil-co", name: "Civil Engineer", anzsco: "—", isco: "2142", nzsced: "031303", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 36000000, studyCost: 50000000, studyYears: 5, trueCost: "COP ~50M + 5 yrs", demandTrend: [68,70,72,74,76,78], demandLabel: "Rising", economic: 66, hireability: 82, network: 72 },
+  { id: "eleceng-co", name: "Electrical Engineer", anzsco: "—", isco: "2151", nzsced: "031303", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 39000000, studyCost: 50000000, studyYears: 5, trueCost: "COP ~50M + 5 yrs", demandTrend: [70,72,74,76,78,80], demandLabel: "Rising", economic: 70, hireability: 82, network: 74 },
+  { id: "chef-co", name: "Chef", anzsco: "—", isco: "3434", nzsced: "110101", country: "CO", skillLevel: "ISCO skill level 3", medianSalary: 24000000, studyCost: 10000000, studyYears: 2, trueCost: "COP ~10M + técnico", demandTrend: [54,56,58,59,60,62], demandLabel: "Stable", economic: 44, hireability: 74, network: 56 },
+  { id: "pharm-co", name: "Pharmacist", anzsco: "—", isco: "2262", nzsced: "060501", country: "CO", skillLevel: "ISCO skill level 4", medianSalary: 42000000, studyCost: 50000000, studyYears: 5, trueCost: "COP ~50M + 5 yrs", demandTrend: [64,66,67,68,69,70], demandLabel: "Stable", economic: 66, hireability: 76, network: 68 },
 ];
 
 function fmtSalary(p: Pathway) {
   if (p.country === "CO") return `COP ${Math.round(p.medianSalary / 1000000)}M`;
   const cur = p.country === "NZ" ? "NZ$" : "AU$";
   return `${cur}${Math.round(p.medianSalary / 1000)}k`;
+}
+
+// ===== ROI logic =====
+function paybackYears(p: Pathway) {
+  // asume ahorrar ~25% del salario/año para recuperar el costo de estudiar
+  const annualSaving = p.medianSalary * 0.25;
+  if (annualSaving <= 0) return 0;
+  return p.studyCost / annualSaving;
+}
+function roi(p: Pathway) {
+  // score 0-100 combinando payback (más rápido = mejor) y empleabilidad + demanda
+  const pb = paybackYears(p);
+  const pbScore = Math.max(0, 100 - pb * 14); // ~7 años payback = 0
+  const demandNow = p.demandTrend[p.demandTrend.length - 1];
+  const score = Math.round(pbScore * 0.45 + p.hireability * 0.35 + demandNow * 0.20);
+  const level = score >= 78 ? "High" : score >= 62 ? "Medium" : "Low";
+  return { score, level, payback: pb };
+}
+function roiClass(level: string) {
+  return level === "High" ? "roi-high" : level === "Medium" ? "roi-mid" : "roi-low";
 }
 
 function Sparkline({ data, up }: { data: number[]; up: boolean }) {
@@ -105,6 +127,8 @@ function CapitalBars({ p }: { p: Pathway }) {
 
 function PathwayDetail({ p, onBack }: { p: Pathway; onBack: () => void }) {
   const up = p.demandLabel !== "Falling";
+  const [showRoi, setShowRoi] = useState(false);
+  const r = roi(p);
   return (
     <div className="detail-page">
       <button className="back" onClick={onBack}>← Back to all pathways</button>
@@ -125,6 +149,7 @@ function PathwayDetail({ p, onBack }: { p: Pathway; onBack: () => void }) {
             <div className={`v ${up ? "up" : "down"}`}>{up ? "▲" : "▼"} {p.demandLabel}</div>
           </div>
         </div>
+
         <div className="stats">
           <div className="stat">
             <div className="k">Median salary</div>
@@ -137,6 +162,26 @@ function PathwayDetail({ p, onBack }: { p: Pathway; onBack: () => void }) {
             <div className="sub">fees + foregone earnings</div>
           </div>
         </div>
+
+        {/* ROI / Value score */}
+        <div className="roi-box">
+          <button className="roi-toggle" onClick={() => setShowRoi(!showRoi)}>
+            <span>
+              <span className="roi-k">VALUE SCORE</span>
+              <span className={`roi-badge ${roiClass(r.level)}`}>{r.level} · {r.score}/100</span>
+            </span>
+            <span className="roi-arrow">{showRoi ? "− Hide details" : "+ How is this calculated?"}</span>
+          </button>
+          {showRoi && (
+            <div className="roi-detail">
+              <div className="roi-row"><span>Estimated payback</span><b>{r.payback.toFixed(1)} years</b></div>
+              <div className="roi-row"><span>Return vs cost ratio</span><b>{(p.medianSalary / Math.max(p.studyCost, 1)).toFixed(1)}× / yr</b></div>
+              <div className="roi-row"><span>Study time</span><b>{p.studyYears} yrs</b></div>
+              <p className="roi-note">Value Score blends how fast the study cost pays back, how much the market hires this credential, and current demand. Illustrative — not financial advice.</p>
+            </div>
+          )}
+        </div>
+
         <div className="lower">
           <div className="section">
             <div className="k">Return across three capitals</div>
@@ -148,6 +193,7 @@ function PathwayDetail({ p, onBack }: { p: Pathway; onBack: () => void }) {
             <div className="sub" style={{ fontSize: 12, color: "#8A8F98", marginTop: 8 }}>Indexed labour-market demand · illustrative</div>
           </div>
         </div>
+
         <div className="cta">
           <p>Want the full database (all NZ, AU &amp; CO pathways)?</p>
           <div className="cta-btns">
@@ -160,10 +206,37 @@ function PathwayDetail({ p, onBack }: { p: Pathway; onBack: () => void }) {
   );
 }
 
+function AboutPage({ onBack }: { onBack: () => void }) {
+  return (
+    <div className="detail-page">
+      <button className="back" onClick={onBack}>← Back</button>
+      <div className="card" style={{ maxWidth: 760, margin: "0 auto" }}>
+        <div className="chead"><div><h2>About Mycelial</h2></div></div>
+        <div style={{ padding: "24px" }}>
+          <p style={{ color: "#C7CBD1", lineHeight: 1.7, marginBottom: 20 }}>
+            Every year, people commit tens of thousands of dollars and years of their lives to a study or career path — with no honest way to see what it really returns or what it truly costs. Mycelial is <b>The Education Data Library</b>: independent, coded, up-to-date data on study and career pathways across New Zealand, Australia and Colombia. We don't sell courses and we take no commissions — we just show the numbers, and let you decide.
+          </p>
+          <div className="k" style={{ color: "#22D3A0", marginBottom: 12 }}>HOW WE MEASURE EDUCATIONAL RETURN</div>
+          <p style={{ color: "#9AA0A8", lineHeight: 1.7, marginBottom: 18 }}>
+            A pathway is more than a salary. Drawing on the economics of hidden cost and Bourdieu's forms of capital, we read every pathway across three kinds of return:
+          </p>
+          <div className="about-cap"><b style={{ color: "#F5F547" }}>Economic</b> — what it pays: median salary and payback, net of the earnings you give up while studying.</div>
+          <div className="about-cap"><b style={{ color: "#F5F547" }}>Hireability (cultural)</b> — whether it actually hires: how strongly the market requires or rewards the credential.</div>
+          <div className="about-cap"><b style={{ color: "#F5F547" }}>Network (social)</b> — who you meet: how connected the field is and where its people cluster.</div>
+          <p style={{ color: "#9AA0A8", lineHeight: 1.7, marginTop: 18 }}>
+            Alongside these sits the <b>true cost</b> (fees plus foregone earnings) and a <b>Value Score</b> that blends payback, hireability and demand — so you see the full picture, not just the pay line.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [country, setCountry] = useState<"All" | Country>("All");
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
+  const [showAbout, setShowAbout] = useState(false);
 
   const inCountry = useMemo(
     () => PATHWAYS.filter((p) => country === "All" || p.country === country),
@@ -180,36 +253,31 @@ export default function App() {
 
   const openPathway = openId ? PATHWAYS.find((p) => p.id === openId)! : null;
 
+  const Nav = (
+    <nav>
+      <div className="wrap nav">
+        <div className="brand" style={{ cursor: "pointer" }} onClick={() => { setOpenId(null); setShowAbout(false); }}>
+          <span className="dot" />Mycelial
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+          <button className="nav-link" onClick={() => { setShowAbout(true); setOpenId(null); }}>About</button>
+          <div className="pill">NZ · AU · CO beta</div>
+        </div>
+      </div>
+    </nav>
+  );
+
+  if (showAbout) {
+    return (<>{Nav}<main className="wrap"><AboutPage onBack={() => setShowAbout(false)} /></main></>);
+  }
+
   if (openPathway) {
-    return (
-      <>
-        <nav>
-          <div className="wrap nav">
-            <div className="brand" style={{ cursor: "pointer" }} onClick={() => setOpenId(null)}>
-              <span className="dot" />Mycelial
-            </div>
-            <div className="pill">NZ · AU · CO beta</div>
-          </div>
-        </nav>
-        <main className="wrap">
-          <PathwayDetail p={openPathway} onBack={() => setOpenId(null)} />
-        </main>
-        <footer>
-          <div className="wrap">Illustrative sample data · coded to ANZSCO &amp; ISCO · updated and timestamped</div>
-        </footer>
-      </>
-    );
+    return (<>{Nav}<main className="wrap"><PathwayDetail p={openPathway} onBack={() => setOpenId(null)} /></main></>);
   }
 
   return (
     <>
-      <nav>
-        <div className="wrap nav">
-          <div className="brand"><span className="dot" />Mycelial</div>
-          <div className="pill">NZ · AU · CO beta</div>
-        </div>
-      </nav>
-
+      {Nav}
       <header>
         <div className="wrap">
           <div className="eyebrow">The Education Data Library</div>
@@ -228,7 +296,6 @@ export default function App() {
               <option value="AU">🇦🇺 Australia</option>
               <option value="CO">🇨🇴 Colombia</option>
             </select>
-
             <div className="search">
               <div className="searchbar">
                 <span>⌕</span>
@@ -252,18 +319,22 @@ export default function App() {
       <main className="wrap">
         <div className="grid-head">{inCountry.length} pathways — click one to analyse</div>
         <div className="grid">
-          {inCountry.map((p) => (
-            <button key={p.id} className="grid-card" onClick={() => setOpenId(p.id)}>
-              <span className="gc-name">{p.name}</span>
-              <span className="gc-codes">
-                {p.country === "CO" ? `ISCO ${p.isco}` : `ANZSCO ${p.anzsco}`}
-              </span>
-              <span className="gc-foot">
-                <span className="gc-country">{p.country}</span>
-                <span className="gc-salary">{fmtSalary(p)}</span>
-              </span>
-            </button>
-          ))}
+          {inCountry.map((p) => {
+            const r = roi(p);
+            return (
+              <button key={p.id} className="grid-card" onClick={() => setOpenId(p.id)}>
+                <span className="gc-top">
+                  <span className="gc-name">{p.name}</span>
+                  <span className={`roi-pill ${roiClass(r.level)}`}>{r.level}</span>
+                </span>
+                <span className="gc-codes">{p.country === "CO" ? `ISCO ${p.isco}` : `ANZSCO ${p.anzsco}`}</span>
+                <span className="gc-foot">
+                  <span className="gc-country">{p.country}</span>
+                  <span className="gc-salary">{fmtSalary(p)}</span>
+                </span>
+              </button>
+            );
+          })}
         </div>
       </main>
 
