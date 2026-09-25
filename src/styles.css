@@ -123,5 +123,65 @@ footer { border-top: 1px solid #23262E; margin-top: 40px; padding: 24px 0 40px; 
 /* about page */
 .about-cap { color: #C7CBD1; line-height: 1.6; margin-bottom: 12px; padding-left: 12px; border-left: 2px solid #22D3A0; }
 
+/* ===== About button más grande y visible ===== */
+.nav-link {
+  background: #14161C;
+  border: 1px solid #23262E;
+  color: #F5F5F7;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 9px 18px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: border-color .15s, color .15s;
+}
+.nav-link:hover { border-color: #22D3A0; color: #22D3A0; }
+
+/* ===== Value Score — mejor paleta y layout ===== */
+/* pills en las tarjetas: colores tipo semáforo más claros */
+.roi-pill {
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 10px; font-weight: 700;
+  padding: 4px 10px; border-radius: 999px;
+  white-space: nowrap; letter-spacing: .03em;
+}
+.roi-high { color: #04231A; background: #22D3A0; }              /* verde = alto valor */
+.roi-mid  { color: #3A2E00; background: #F5C542; }              /* ámbar = medio */
+.roi-low  { color: #F5D9D5; background: #B5433A; }              /* rojo = bajo */
+
+/* caja del Value Score en el detalle — más estructurada */
+.roi-box {
+  border-bottom: 1px solid #23262E;
+  background: linear-gradient(180deg, #131A17, #14161C);
+}
+.roi-toggle {
+  display: flex; width: 100%; justify-content: space-between; align-items: center;
+  gap: 12px; background: transparent; border: 0; padding: 20px 24px;
+  cursor: pointer; font-family: inherit; color: #F5F5F7; flex-wrap: wrap;
+}
+.roi-toggle > span:first-child { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.roi-k {
+  font-family: 'IBM Plex Mono', monospace; font-size: 10.5px;
+  letter-spacing: .1em; text-transform: uppercase; color: #8A8F98;
+}
+.roi-badge {
+  font-family: 'Space Grotesk', sans-serif; font-size: 15px;
+  padding: 6px 14px; border-radius: 10px; font-weight: 700;
+}
+.roi-arrow { font-size: 13px; color: #22D3A0; font-weight: 500; }
+
+/* detalle desplegable: cada métrica como mini-tarjeta */
+.roi-detail { padding: 4px 24px 22px; }
+.roi-row {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 14px; padding: 12px 14px; margin-top: 8px;
+  background: #101317; border: 1px solid #23262E; border-radius: 10px;
+  color: #C7CBD1;
+}
+.roi-row b { font-family: 'Space Grotesk', sans-serif; font-size: 16px; color: #F5F5F7; }
+.roi-note { font-size: 12px; color: #8A8F98; margin-top: 14px; line-height: 1.55; }
+
+
   
 }
