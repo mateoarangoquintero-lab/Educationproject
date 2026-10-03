@@ -23,7 +23,7 @@ interface Pathway {
   network: number;
 }
 
-const STRIPE_LINK = "https://buy.stripe.com/test_28EdR25B85H2co188qgQE00";
+const STRIPE_LINK = "https://forms.gle/gzjxA1rQoaXViQ4i9";
 const INTEREST_LINK = "https://docs.google.com/forms/d/1g4p8yhfoz9A_a4BThnBuloUGWX5B-Of-SbUlrTK7ygA/edit";
 
 const PATHWAYS: Pathway[] = [
