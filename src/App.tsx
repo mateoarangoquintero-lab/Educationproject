@@ -32,7 +32,9 @@ interface Pathway {
   note?: string;
 }
 
-const STRIPE_LINK = "PEGA_AQUI_TU_LINK_DE_RESERVA";
+// Reservation form (Google Form). When live payments open, replace this with the Stripe link.
+const RESERVE_LINK = "https://docs.google.com/forms/d/1MGSHL6csIAV1fbApaJ7goXoUATYXW1S6HfNqb--Odw8/viewform";
+const CONTACT_EMAIL = "PUT_YOUR_EMAIL_HERE";
 const INTEREST_LINK = "https://forms.gle/WJdpoycxKN1h8CKKA";
 
 // ---------- shared sources ----------
@@ -281,7 +283,7 @@ function PathwayDetail({ p, onBack }: { p: Pathway; onBack: () => void }) {
           <p>Want the full database (all NZ, AU &amp; CO pathways)?</p>
           <div className="cta-btns">
             <a className="btn" href={INTEREST_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>I'm interested</a>
-            <a className="btn-ghost" href={STRIPE_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>Reserve · $19 at launch</a>
+            <a className="btn-ghost" href={RESERVE_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>Reserve · NZ$19 at launch</a>
           </div>
         </div>
       </div>
@@ -315,11 +317,48 @@ function AboutPage({ onBack }: { onBack: () => void }) {
   );
 }
 
+function TrustPage({ onBack }: { onBack: () => void }) {
+  const h = { color: "#22D3A0", marginTop: 22, marginBottom: 8 } as const;
+  const p = { color: "#9AA0A8", lineHeight: 1.7, marginBottom: 10 } as const;
+  return (
+    <div className="detail-page">
+      <button className="back" onClick={onBack}>← Back</button>
+      <div className="card" style={{ maxWidth: 760, margin: "0 auto" }}>
+        <div className="chead"><div><h2>Trust &amp; ethics</h2></div></div>
+        <div style={{ padding: "24px" }}>
+          <p style={{ color: "#C7CBD1", lineHeight: 1.7, marginBottom: 6 }}>
+            Mycelial only works if you can trust the numbers. These are the rules we follow.
+          </p>
+
+          <div className="k" style={h}>INDEPENDENT BY DESIGN</div>
+          <p style={p}>We don't sell courses and we take no commissions. Every institution pays the same price for access. Nobody can pay for placement or ranking, and no institution can edit or remove its own pathway. We correct a figure only when there is evidence.</p>
+
+          <div className="k" style={h}>WHO PAYS US</div>
+          <p style={p}>Mycelial is in beta and has no paying institutions yet. When it does, they will be listed here.</p>
+
+          <div className="k" style={h}>HONEST ABOUT THE DATA</div>
+          <p style={p}>Every figure links to its source and the date it was checked. Estimates are labelled as estimates (the Network score is one), salaries can rest on small or self reported samples, and official data can lag. If the data says a pathway will not pay off or will not hire, we say so, and we will not sell a report where the data is too thin to be honest. This is information, not financial advice.</p>
+
+          <div className="k" style={h}>YOUR DATA</div>
+          <p style={p}>We only collect what you give us in our forms: your email and your answers. We use it to tell you when Mycelial launches and to measure interest, never sell or share it, and delete it within 12 months or whenever you ask. We follow the New Zealand Privacy Act 2020.</p>
+
+          <div className="k" style={h}>PUBLIC DATA AND MĀORI DATA</div>
+          <p style={p}>We credit every source and follow its licence (for example, Stats NZ content under CC BY 4.0). We don't claim to own public data. Any figure broken down by ethnicity will be shown with its context, guided by the principles of Māori data sovereignty.</p>
+
+          <div className="k" style={h}>FOUND AN ERROR?</div>
+          <p style={p}>If a number doesn't match its source, email <a href={`mailto:${CONTACT_EMAIL}`} style={{ color: "#22D3A0" }}>{CONTACT_EMAIL}</a> and we will check it.</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [country, setCountry] = useState<"All" | Country>("All");
   const [query, setQuery] = useState("");
   const [openId, setOpenId] = useState<string | null>(null);
   const [showAbout, setShowAbout] = useState(false);
+  const [showTrust, setShowTrust] = useState(false);
 
   const inCountry = useMemo(
     () => PATHWAYS.filter((p) => country === "All" || p.country === country),
@@ -339,16 +378,21 @@ export default function App() {
   const Nav = (
     <nav>
       <div className="wrap nav">
-        <div className="brand" style={{ cursor: "pointer" }} onClick={() => { setOpenId(null); setShowAbout(false); }}>
+        <div className="brand" style={{ cursor: "pointer" }} onClick={() => { setOpenId(null); setShowAbout(false); setShowTrust(false); }}>
           <span className="dot" />Mycelial
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <button className="nav-link" onClick={() => { setShowAbout(true); setOpenId(null); }}>About</button>
+          <button className="nav-link" onClick={() => { setShowAbout(true); setShowTrust(false); setOpenId(null); }}>About</button>
+          <button className="nav-link" onClick={() => { setShowTrust(true); setShowAbout(false); setOpenId(null); }}>Trust &amp; ethics</button>
           <div className="pill">NZ · AU · CO beta</div>
         </div>
       </div>
     </nav>
   );
+
+  if (showTrust) {
+    return (<>{Nav}<main className="wrap"><TrustPage onBack={() => setShowTrust(false)} /></main></>);
+  }
 
   if (showAbout) {
     return (<>{Nav}<main className="wrap"><AboutPage onBack={() => setShowAbout(false)} /></main></>);
@@ -369,7 +413,7 @@ export default function App() {
 
           <div className="hero-cta">
             <a className="btn" href={INTEREST_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>I'm interested — get early access</a>
-            <a className="btn-ghost" href={STRIPE_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>Reserve · $19 at launch</a>
+            <a className="btn-ghost" href={RESERVE_LINK} target="_blank" rel="noopener noreferrer" style={{ textDecoration: "none" }}>Reserve · NZ$19 at launch</a>
           </div>
 
           <div className="controls">
