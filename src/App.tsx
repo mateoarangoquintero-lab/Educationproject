@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { Analytics } from "@vercel/analytics/react";
 import "./styles.css";
 
 // ============================================================
@@ -470,6 +471,7 @@ export default function App() {
       <footer>
         <div className="wrap">Beta · pay and fees from official and survey sources linked on each page (checked October 2026) · coded to ANZSCO &amp; ISCO · not financial advice</div>
       </footer>
+      <Analytics />
     </>
   );
 }
