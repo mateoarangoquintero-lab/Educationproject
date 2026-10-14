@@ -551,15 +551,68 @@ function TrustPage({ onBack, lang }: { onBack: () => void; lang: Lang }) {
   );
 }
 
+// ---------- one address per view ----------
+// Each pathway gets its own address (?p=nurse-co), and About and Trust get ?page=about / ?page=trust,
+// so Vercel Analytics counts every pathway someone opens as a page view.
+// A link such as /?lang=es&p=nurse-co also opens that pathway directly.
+type View = { openId: string | null; page: "about" | "trust" | null };
+
+function viewFromUrl(): View {
+  try {
+    const q = new URLSearchParams(window.location.search);
+    const p = q.get("p");
+    const page = q.get("page");
+    return {
+      openId: p && PATHWAYS.some((x) => x.id === p) ? p : null,
+      page: page === "about" || page === "trust" ? page : null,
+    };
+  } catch {
+    return { openId: null, page: null };
+  }
+}
+
+function urlFor(view: View, lang: Lang) {
+  const q = new URLSearchParams();
+  q.set("lang", lang);
+  if (view.openId) q.set("p", view.openId);
+  else if (view.page) q.set("page", view.page);
+  return `${window.location.pathname}?${q.toString()}`;
+}
+
 export default function App() {
   const [lang, setLang] = useState<Lang>(initialLang);
   const [country, setCountry] = useState<"All" | Country>("All");
   const [query, setQuery] = useState("");
-  const [openId, setOpenId] = useState<string | null>(null);
-  const [showAbout, setShowAbout] = useState(false);
-  const [showTrust, setShowTrust] = useState(false);
+  const [view, setView] = useState<View>(viewFromUrl);
+  const openId = view.openId;
+  const showAbout = view.page === "about";
+  const showTrust = view.page === "trust";
+  const home: View = { openId: null, page: null };
   const t = TXT[lang];
   const reserveLink = lang === "es" ? RESERVE_LINK_ES : RESERVE_LINK;
+
+  // Move to a new view and give it its own address (counted as a page view)
+  const go = (next: View) => {
+    setView(next);
+    try {
+      window.history.pushState(null, "", urlFor(next, lang));
+      window.scrollTo(0, 0);
+    } catch { /* ignore */ }
+  };
+
+  // Change language and keep it in the address, without counting a new page view
+  const toggleLang = () => {
+    const next: Lang = lang === "en" ? "es" : "en";
+    setLang(next);
+    try { window.history.replaceState(null, "", urlFor(view, next)); } catch { /* ignore */ }
+  };
+
+  // Browser back and forward buttons
+  useEffect(() => {
+    const onPop = () => setView(viewFromUrl());
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   useEffect(() => {
     try { document.documentElement.lang = lang; } catch { /* ignore */ }
@@ -583,13 +636,13 @@ export default function App() {
   const Nav = (
     <nav>
       <div className="wrap nav">
-        <div className="brand" style={{ cursor: "pointer" }} onClick={() => { setOpenId(null); setShowAbout(false); setShowTrust(false); }}>
+        <div className="brand" style={{ cursor: "pointer" }} onClick={() => go(home)}>
           <span className="dot" />Mycelial
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-          <button className="nav-link" onClick={() => { setShowAbout(true); setShowTrust(false); setOpenId(null); }}>{t.about}</button>
-          <button className="nav-link" onClick={() => { setShowTrust(true); setShowAbout(false); setOpenId(null); }}>{t.trust}</button>
-          <button className="nav-link" aria-label={t.toggleLabel} title={t.toggleLabel} onClick={() => setLang(lang === "en" ? "es" : "en")} style={{ fontWeight: 700 }}>{t.toggle}</button>
+          <button className="nav-link" onClick={() => go({ openId: null, page: "about" })}>{t.about}</button>
+          <button className="nav-link" onClick={() => go({ openId: null, page: "trust" })}>{t.trust}</button>
+          <button className="nav-link" aria-label={t.toggleLabel} title={t.toggleLabel} onClick={toggleLang} style={{ fontWeight: 700 }}>{t.toggle}</button>
           <div className="pill">NZ · AU · CO beta</div>
         </div>
       </div>
@@ -597,15 +650,15 @@ export default function App() {
   );
 
   if (showTrust) {
-    return (<>{Nav}<main className="wrap"><TrustPage onBack={() => setShowTrust(false)} lang={lang} /></main></>);
+    return (<>{Nav}<main className="wrap"><TrustPage onBack={() => go(home)} lang={lang} /></main></>);
   }
 
   if (showAbout) {
-    return (<>{Nav}<main className="wrap"><AboutPage onBack={() => setShowAbout(false)} lang={lang} /></main></>);
+    return (<>{Nav}<main className="wrap"><AboutPage onBack={() => go(home)} lang={lang} /></main></>);
   }
 
   if (openPathway) {
-    return (<>{Nav}<main className="wrap"><PathwayDetail p={openPathway} onBack={() => setOpenId(null)} lang={lang} /></main></>);
+    return (<>{Nav}<main className="wrap"><PathwayDetail key={openPathway.id} p={openPathway} onBack={() => go(home)} lang={lang} /></main></>);
   }
 
   return (
@@ -636,7 +689,7 @@ export default function App() {
               {matches.length > 0 && (
                 <div className="sug">
                   {matches.map((p) => (
-                    <button key={p.id} onClick={() => { setOpenId(p.id); setQuery(""); }}>
+                    <button key={p.id} onClick={() => { go({ openId: p.id, page: null }); setQuery(""); }}>
                       <span>{nameOf(p, lang)} <span style={{ color: "#5B616C" }}>· {p.country}</span></span>
                       <span className="code">ISCO {p.isco}</span>
                     </button>
@@ -654,7 +707,7 @@ export default function App() {
           {inCountry.map((p) => {
             const r = roi(p);
             return (
-              <button key={p.id} className="grid-card" onClick={() => setOpenId(p.id)}>
+              <button key={p.id} className="grid-card" onClick={() => go({ openId: p.id, page: null })}>
                 <span className="gc-top">
                   <span className="gc-name">{nameOf(p, lang)}</span>
                   <span className={`roi-pill ${roiClass(r.level)}`}>{levelOf(r.level, lang)}</span>
@@ -676,4 +729,3 @@ export default function App() {
     </>
   );
 }
-
