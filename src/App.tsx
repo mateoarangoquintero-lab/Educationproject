@@ -1,5 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import "./styles.css";
+import { ROUTES } from "./routes";
+import type { Route, RMode, T } from "./routes";
 
 // ============================================================
 //  Mycelial — The Education Data Library (beta)
@@ -122,7 +124,15 @@ const TXT = {
     fees: "fees", noFees: "No tuition fees", givenUp: "earnings given up", yrs: "yrs", earnWhile: " · earn while training",
     valueScore: "VALUE SCORE", payback: "Payback on true cost", years: "years", notAtMedian: "Not at median pay",
     earningsGivenUp: "Earnings given up while studying", studyTime: "Study time",
-    roiNote: "True cost = fees + the earnings you give up while studying (a full-time minimum-wage salary for each year of full-time study; half for part-time-compatible technical study; none for paid apprenticeships). Payback = years for the extra salary over that wage to recover the true cost. Value Score blends payback (45%), hireability (35%) and pay rank (20%). Illustrative — not financial advice.",
+    roiNote: "True cost = fees + the earnings you give up while studying (a full-time minimum-wage salary for each year of full-time study; half for technical study or study with paid work; a quarter for part-time study while working; none for paid apprenticeships or paid training). Payback = years for the extra salary over that wage to recover the true cost. Value Score blends payback (45%), hireability (35%) and pay rank (20%). Illustrative — not financial advice.",
+    routesK: "Ways to get there",
+    routesN: (n: number) => (n === 1 ? "1 route" : `${n} routes`),
+    mainRoute: "Main route", fastest: "Fastest", cheapest: "Lowest true cost", related: "Related role", estimate: "Estimate",
+    time: "Time", feesL: "Fees", varies: "Varies", free: "Free", notPublished: "Not published",
+    before: "Before you start", where: "Where to study", routeSrc: "Sources", paybackShort: "Payback", yr: "yr",
+    relatedNote: "Payback is not shown because the pay differs from this page.",
+    routesFoot: "Same true-cost method as the Value Score, which uses the main route. Routes that need a degree first count only the new study. Fees from the sources listed, checked October 2026.",
+    modeL: { apprenticeship: "paid apprenticeship", employment: "paid job", "work-study": "study + paid work", technical: "technical", "part-time": "part time", "full-time": "full time" } as Record<RMode, string>,
     capitals: "Return across three capitals", economic: "Economic", hireability: "Hireability", network: "Network",
     capNote: (c: string) => `Economic = pay rank in ${c} · Hireability = official shortage status · Network = Mycelial estimate (beta)`,
     sources: "Sources", pay: "Pay", feesKey: "Fees", demandKey: "Demand", note: "Note",
@@ -144,7 +154,15 @@ const TXT = {
     fees: "de matrícula", noFees: "Sin matrícula", givenUp: "que dejas de ganar", yrs: "años", earnWhile: " · ganas mientras te formas",
     valueScore: "PUNTAJE DE VALOR", payback: "Recuperación del costo real", years: "años", notAtMedian: "No con el salario mediano",
     earningsGivenUp: "Lo que dejas de ganar mientras estudias", studyTime: "Tiempo de estudio",
-    roiNote: "Costo real = matrícula + lo que dejas de ganar mientras estudias (un salario mínimo de tiempo completo por cada año de estudio de tiempo completo; la mitad para estudios técnicos compatibles con trabajar; nada para aprendizajes pagados). Recuperación = años que tarda el salario extra sobre ese mínimo en cubrir el costo real. El puntaje de valor combina recuperación (45%), empleabilidad (35%) y posición salarial (20%). Ilustrativo, no es asesoría financiera.",
+    roiNote: "Costo real = matrícula + lo que dejas de ganar mientras estudias (un salario mínimo de tiempo completo por cada año de estudio de tiempo completo; la mitad para estudios técnicos o estudio con trabajo pagado; una cuarta parte para estudio de medio tiempo mientras trabajas; nada para aprendizajes o formaciones pagadas). Recuperación = años que tarda el salario extra sobre ese mínimo en cubrir el costo real. El puntaje de valor combina recuperación (45%), empleabilidad (35%) y posición salarial (20%). Ilustrativo, no es asesoría financiera.",
+    routesK: "Rutas para llegar",
+    routesN: (n: number) => (n === 1 ? "1 ruta" : `${n} rutas`),
+    mainRoute: "Ruta principal", fastest: "La más rápida", cheapest: "Menor costo real", related: "Rol relacionado", estimate: "Estimado",
+    time: "Tiempo", feesL: "Matrícula", varies: "Variable", free: "Gratis", notPublished: "No publicada",
+    before: "Antes de empezar", where: "Dónde estudiar", routeSrc: "Fuentes", paybackShort: "Recuperación", yr: "año",
+    relatedNote: "No se muestra la recuperación porque el salario es distinto al de esta página.",
+    routesFoot: "Mismo método de costo real del puntaje de valor, que usa la ruta principal. Las rutas que piden un título previo solo cuentan el estudio nuevo. Matrículas de las fuentes indicadas, revisadas en octubre de 2026.",
+    modeL: { apprenticeship: "aprendizaje pagado", employment: "empleo pagado", "work-study": "estudio + trabajo pagado", technical: "técnico", "part-time": "medio tiempo", "full-time": "tiempo completo" } as Record<RMode, string>,
     capitals: "Retorno en tres capitales", economic: "Económico", hireability: "Empleabilidad", network: "Red",
     capNote: (c: string) => `Económico = posición salarial en ${c} · Empleabilidad = estado oficial de escasez · Red = estimado de Mycelial (beta)`,
     sources: "Fuentes", pay: "Salario", feesKey: "Matrícula", demandKey: "Demanda", note: "Nota",
@@ -331,6 +349,104 @@ function CapitalBars({ p, t }: { p: Pathway; t: Txt }) {
   );
 }
 
+// ===== ROUTES ("Ways to get there") =====
+// Same true-cost method as the main pathway, step by step.
+const ROUTE_SHARE: Record<RMode, number> = { apprenticeship: 0, employment: 0, "part-time": 0.25, "work-study": 0.5, technical: 0.5, "full-time": 1 };
+
+function routeCalc(p: Pathway, r: Route) {
+  const yearsKnown = r.steps.every((s) => s.y !== null);
+  const feesKnown = r.steps.every((s) => s.f !== null);
+  const years = yearsKnown ? r.steps.reduce((a, s) => a + (s.y ?? 0), 0) : null;
+  const fees = r.steps.reduce((a, s) => a + (s.f ?? 0), 0);
+  const forgone = r.steps.reduce((a, s) => a + (s.y ?? 0) * REF_WAGE[p.country] * ROUTE_SHARE[s.m], 0);
+  const total = fees + forgone;
+  const premium = p.medianSalary - REF_WAGE[p.country];
+  const comparable = yearsKnown && feesKnown && !r.related;
+  const payback = comparable ? (premium > 0 ? total / premium : Infinity) : null;
+  return { years, fees, feesKnown, total, payback, comparable: comparable && !r.prior };
+}
+
+const pick = (x: T, lang: Lang) => (lang === "es" ? x[1] : x[0]);
+const fmtYears = (y: number, lang: Lang) => fmtNum(Number(y.toFixed(1)), lang);
+const yearsLabel = (y: number, lang: Lang) => `${fmtYears(y, lang)} ${Number(y.toFixed(1)) === 1 ? TXT[lang].yr : TXT[lang].yrs}`;
+
+function RoutesBox({ p, lang }: { p: Pathway; lang: Lang }) {
+  const routes = ROUTES[p.id];
+  if (!routes || routes.length === 0) return null;
+  const t = TXT[lang];
+  const calcs = routes.map((r) => routeCalc(p, r));
+  // badges only compare routes that reach the same job without a prior degree
+  const cmp = calcs.map((c, i) => ({ c, i })).filter((x) => x.c.comparable);
+  const minYears = cmp.length > 1 ? Math.min(...cmp.map((x) => x.c.years as number)) : null;
+  const minTotal = cmp.length > 1 ? Math.min(...cmp.map((x) => x.c.total)) : null;
+  const money = (n: number) => fmtMoney(p.country, n, lang);
+  return (
+    <div className="routes">
+      <div className="routes-head">
+        <span className="routes-k">{t.routesK}</span>
+        <span className="routes-n">{t.routesN(routes.length)}</span>
+      </div>
+      {routes.map((r, i) => {
+        const c = calcs[i];
+        const fastest = minYears !== null && c.comparable && c.years === minYears && cmp.filter((x) => x.c.years === minYears).length < cmp.length;
+        const cheapest = minTotal !== null && c.comparable && c.total === minTotal;
+        const pre = r.approx ? "≈ " : "";
+        return (
+          <div className={`route${i === 0 ? " main" : ""}`} key={i}>
+            <div className="route-top">
+              <span className="route-name"><span className="route-num">{i + 1}</span>{pick(r.t, lang)}</span>
+              <span className="rbadges">
+                {i === 0 && <span className="rbadge main">{t.mainRoute}</span>}
+                {fastest && <span className="rbadge fast">{t.fastest}</span>}
+                {cheapest && <span className="rbadge cheap">{t.cheapest}</span>}
+                {r.related && <span className="rbadge rel">{t.related}</span>}
+                {r.approx && <span className="rbadge est">{t.estimate}</span>}
+              </span>
+            </div>
+            {r.prior && <div className="route-prior"><b>{t.before}:</b> {pick(r.prior, lang)}</div>}
+            <ol className={`steps${r.steps.length === 1 ? " one" : ""}`}>
+              {r.steps.map((s, j) => (
+                <li key={j}>
+                  {!(r.steps.length === 1 && pick(s.t, lang) === pick(r.t, lang)) && <span className="st">{pick(s.t, lang)}</span>}
+                  <span className="sm">
+                    {s.d ? pick(s.d, lang) : s.y !== null ? `${pre}${yearsLabel(s.y, lang)}` : t.varies}
+                    {" · "}{t.modeL[s.m]}{" · "}
+                    {s.f === null ? t.notPublished : s.f === 0 ? t.free : money(s.f)}
+                  </span>
+                </li>
+              ))}
+            </ol>
+            <div className="rfig">
+              <div><span>{t.time}</span><b>{c.years !== null ? `${pre}${yearsLabel(c.years, lang)}` : t.varies}</b></div>
+              <div><span>{t.feesL}</span><b>{!c.feesKnown ? t.notPublished : c.fees === 0 ? t.free : money(c.fees)}</b></div>
+              <div><span>{t.trueCost}</span><b>{c.feesKnown && c.years !== null ? money(c.total) : "—"}</b></div>
+              <div><span>{t.paybackShort}</span><b>{c.payback === null ? "—" : isFinite(c.payback) ? yearsLabel(c.payback, lang) : t.notAtMedian}</b></div>
+            </div>
+            {(r.note || r.related) && (
+              <p className="route-note">
+                {r.note ? pick(r.note, lang) : ""}{r.note && r.related ? " " : ""}{r.related ? t.relatedNote : ""}
+              </p>
+            )}
+            <div className="prov">
+              <span className="pk">{t.where}</span>
+              {r.prov.map(([name, url]) => (
+                <a key={name} href={url} target="_blank" rel="noopener noreferrer">{name} ↗</a>
+              ))}
+            </div>
+            <div className="rsrc">
+              {t.routeSrc}:{" "}
+              {r.src.map(([label, url], k) => (
+                <span key={url}>{k > 0 ? " · " : ""}<a href={url} target="_blank" rel="noopener noreferrer">{label}</a></span>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+      <p className="routes-foot">{t.routesFoot}</p>
+    </div>
+  );
+}
+
 function SourceLink({ k, s }: { k: string; s: Src }) {
   return (
     <div style={{ fontSize: 13, lineHeight: 1.6, marginBottom: 6 }}>
@@ -402,6 +518,8 @@ function PathwayDetail({ p, onBack, lang }: { p: Pathway; onBack: () => void; la
             </div>
           )}
         </div>
+
+        <RoutesBox p={p} lang={lang} />
 
         <div className="lower">
           <div className="section">
